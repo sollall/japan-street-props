@@ -7,6 +7,7 @@ dependencies = ["pyyaml>=6", "requests>=2.31"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+build = ["bpy>=5.1"]   # props/ のモデル生成用（Blender の Python モジュール）
 
 [project.scripts]
 asset-publisher = "asset_publisher.cli:main"

@@ -1,0 +1,42 @@
+# 1アセット = 1ファイル。全販売先の出品情報をここにまとめる。
+# モデルと画像は `python -m props.build guardrail` で作り直せる。
+id: jp-guardrail
+version: 1.0.0
+
+title:
+  en: Japanese Guardrail (W-Beam, 4 m Tileable) - Low Poly Street Prop
+  ja: ガードレール 4m（連結可）ローポリ小物
+
+description:
+  en: |
+    A white W-beam guardrail section, 4 m long with posts every 2 m.
+    Place copies every 4 m along X and they join seamlessly. Includes brackets, bolts and orange reflectors.
+    About 460 triangles, one mesh. Road side faces -Y, origin at the start of the section on the ground.
+  ja: |
+    白い波形ガードレールの4 m区間です（支柱間隔2 m）。
+    X方向に4 mずつ並べるとそのままつながります。ブラケット、ボルト、オレンジの反射板付き。
+    約460三角形・1メッシュ。車道側は -Y、原点は区間の始点（地面）です。
+
+tags: [japan, guardrail, road, barrier, modular, street, prop, low poly]
+
+license: royalty-free
+ai_usage: generated        # モデルは AI が書いた Blender スクリプトで生成している
+
+price:
+  usd: 3.99
+  jpy: 500
+
+files:
+  - { path: files/guardrail.blend, format: blend }
+  - { path: files/guardrail.fbx,   format: fbx }
+  - { path: files/guardrail.glb,   format: glb }
+
+images:
+  - images/perspective.png
+  - images/front.png
+  - images/side.png
+  - images/top.png
+
+overrides:
+  booth:
+    title: 【3Dモデル】ガードレール 4m区間・並べてつながる（ローポリ・実寸）

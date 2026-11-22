@@ -1,0 +1,42 @@
+# 1アセット = 1ファイル。全販売先の出品情報をここにまとめる。
+# モデルと画像は `python -m props.build vending_machine` で作り直せる。
+id: jp-vending-machine
+version: 1.0.0
+
+title:
+  en: Japanese Vending Machine - Low Poly Street Prop
+  ja: 日本の自動販売機 ローポリ小物
+
+description:
+  en: |
+    A generic Japanese drink vending machine built to real-world size (1.0 x 0.7 x 1.83 m).
+    About 1,800 triangles, one mesh, flat-colour materials with an emissive display window and buttons.
+    No brand logos or trademarks. Origin at ground centre, front faces -Y, units in metres.
+  ja: |
+    実寸（幅1.0 × 奥行0.7 × 高さ1.83 m）で作った、日本の飲料自動販売機の3Dモデルです。
+    約1,800三角形・1メッシュ。単色マテリアルで、商品見本の窓とボタンは発光します。
+    企業ロゴや商標は入っていません。原点は地面の中心、正面は -Y、単位はメートルです。
+
+tags: [japan, vending machine, street, prop, low poly, urban, game asset]
+
+license: royalty-free
+ai_usage: generated        # モデルは AI が書いた Blender スクリプトで生成している
+
+price:
+  usd: 5.99
+  jpy: 800
+
+files:
+  - { path: files/vending_machine.blend, format: blend }
+  - { path: files/vending_machine.fbx,   format: fbx }
+  - { path: files/vending_machine.glb,   format: glb }
+
+images:
+  - images/perspective.png
+  - images/front.png
+  - images/side.png
+  - images/top.png
+
+overrides:
+  booth:
+    title: 【3Dモデル】日本の自動販売機（ローポリ・実寸）

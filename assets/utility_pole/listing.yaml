@@ -1,0 +1,42 @@
+# 1アセット = 1ファイル。全販売先の出品情報をここにまとめる。
+# モデルと画像は `python -m props.build utility_pole` で作り直せる。
+id: jp-utility-pole
+version: 1.0.0
+
+title:
+  en: Japanese Utility Pole with Transformer - Low Poly Street Prop
+  ja: 日本の電柱（柱上変圧器付き）ローポリ小物
+
+description:
+  en: |
+    A 10 m concrete utility pole as seen on Japanese streets: crossarms, pin insulators, pole-mounted transformer,
+    step bolts, yellow/black guard band and a street light with an emissive lens.
+    About 1,600 triangles, one mesh. Wires are not included. Origin at ground centre, units in metres.
+  ja: |
+    日本の街角にある地上高10 mのコンクリート柱です。腕金、ピンがいし、柱上変圧器、足場ボルト、
+    黄黒のしま、街路灯（レンズは発光）が付いています。
+    約1,600三角形・1メッシュ。電線は含みません。原点は地面の中心、単位はメートルです。
+
+tags: [japan, utility pole, power pole, transformer, street, prop, low poly, urban]
+
+license: royalty-free
+ai_usage: generated        # モデルは AI が書いた Blender スクリプトで生成している
+
+price:
+  usd: 5.99
+  jpy: 800
+
+files:
+  - { path: files/utility_pole.blend, format: blend }
+  - { path: files/utility_pole.fbx,   format: fbx }
+  - { path: files/utility_pole.glb,   format: glb }
+
+images:
+  - images/perspective.png
+  - images/front.png
+  - images/side.png
+  - images/top.png
+
+overrides:
+  booth:
+    title: 【3Dモデル】日本の電柱 柱上変圧器・街路灯付き（ローポリ・実寸）
