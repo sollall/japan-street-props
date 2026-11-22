@@ -65,6 +65,7 @@ Blender で作った3Dアセットを、複数の販売先へまとめて出品�
 | CGTrader | API | 下書き作成、画像・ファイル添付 | 内容確認、AI使用の申告、公開 |
 | Etsy | API | ダウンロード商品の下書き作成、画像・ファイル添付 | 内容確認して公開 |
 | itch.io | butler | ファイルのアップロード・更新 | ページは最初に手で作る |
+| Roblox Creator Store | API | モデルを非公開でアップロード、プレビュー画像を設定（設定すれば出品まで） | 出品をオンにして価格を設定 |
 | Fab | キット | zip・画像・入力文面・チェックリストを作成 | 画面で入力して審査に出す |
 | BOOTH | キット | 同上（日本語・円建て） | 画面で入力して公開 |
 | Cults3D | キット | 同上 | 画面で入力して公開 |
@@ -111,7 +112,7 @@ asset-publisher record assets/danchi_5f/listing.yaml fab --url https://www.fab.c
 
 - `publish.yaml`：販売先ごとのオン・オフと設定
 - `assets/<名前>/listing.yaml`：1アセット分の出品情報（タイトル・説明は日英、価格はドルと円）。サンプルは `examples/danchi_5f/`
-- 認証情報は環境変数で渡します（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`）。`--live` のときだけ必要です。
+- 認証情報は環境変数で渡します（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`、`ROBLOX_API_KEY`）。`--live` のときだけ必要です。
 
 ## 販売先を足すとき
 
@@ -145,4 +146,10 @@ project-deploy:
 - **CGTrader**：下書き作成時のフィールド名（`title`・`description`・`tags`・`prices`・`category_id`）は、公開されている更新APIの例から推測しています。最初の `--live` の前に API ドキュメントと照らし合わせてください。AI 使用の申告を API で行う方法は確認できなかったので、画面での申告をメモに出しています。
 - **Etsy**：`when_made` の値やタグの渡し方は、実際の API の応答を見て調整が必要な場合があります。
 - **Sketchfab**：既存モデルの更新はタイトルや説明などの情報だけで、モデルファイルは差し替えられません。ファイルを変えたときは `--force` で新規作成してください。
+- **Roblox Creator Store**
+  - API キーは Creator Hub で作り、権限に assets の Read・Write を付けます。`distribute: true` にするなら creator-store-product の Write も必要です。`publish.yaml` に `user_id` か `group_id` を書いてください。
+  - 送れるのは1ファイル 20MB まで。アップロードすると Roblox の Model（パッケージ）に変換されるので、見た目は Studio で確認してください。
+  - 既定（`distribute: false`）は非公開でアップロードするだけです。`true` にすると `price.usd`（$2.99〜$49.99、0 は無料）で**そのまま公開されます**。有料で売るには、事前に画面で販売者アカウント（Stripe）の登録が必要です。
+  - 出品 API とアセットの更新 API はベータです。プレビュー画像の設定や出品が失敗しても、モデルのアップロードは成功として記録し、失敗の内容をメモに出します。
+  - 更新でモデルの中身を差し替えられるのは fbx だけです。価格や出品状態の変更は画面で行ってください。
 - テストはすべて通信をモックしたものです。実際の販売先にはまだ接続していません。最初は各販売先を1つずつ `--only` で試してください。

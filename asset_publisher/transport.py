@@ -43,8 +43,14 @@ class Transport:
         headers: dict | None = None,
         data: dict | list | None = None,
         json: dict | None = None,
-        files: dict[str, Path] | None = None,
+        files: dict[str, Path | tuple[Path, str]] | None = None,
+        multipart: bool = False,
     ) -> dict:
+        """files の値はパス、または (パス, Content-Type)。
+
+        multipart=True にすると、ファイルが無くても data を multipart/form-data で送る。
+        """
+        paths = {k: (v if isinstance(v, tuple) else (v, None)) for k, v in (files or {}).items()}
         self.calls.append(
             Call(
                 kind="http",
@@ -52,18 +58,26 @@ class Transport:
                 url=url,
                 data=dict(data) if isinstance(data, dict) else ({"_list": data} if data else None),
                 json=json,
-                files={k: Path(v).name for k, v in (files or {}).items()} or None,
+                files={k: Path(v[0]).name for k, v in paths.items()} or None,
             )
         )
         if self.dry_run:
             return {"_dry_run": True}
 
         session = self.session or requests.Session()
-        opened = {k: open(v, "rb") for k, v in (files or {}).items()}
+        opened = {k: open(v[0], "rb") for k, v in paths.items()}
+        parts: dict = {
+            k: (Path(paths[k][0]).name, fh, paths[k][1]) if paths[k][1] else fh
+            for k, fh in opened.items()
+        }
+        if multipart and isinstance(data, dict):
+            # (None, 値) にすると、ファイル名なしの通常のフォーム項目として multipart に入る
+            parts = {**{k: (None, str(v)) for k, v in data.items()}, **parts}
+            data = None
         try:
             r = session.request(
                 method, url, headers=headers, data=data, json=json,
-                files=opened or None, timeout=self.timeout,
+                files=parts or None, timeout=self.timeout,
             )
         finally:
             for fh in opened.values():

@@ -39,6 +39,15 @@ targets:
     formats: [blend, fbx, glb, usd]
     # 環境変数: BUTLER_API_KEY（butler コマンドが必要）
 
+  roblox:
+    enabled: false
+    user_id: null           # 自分の名義で上げるとき（プロフィールURLの数字）
+    group_id: null          # グループの名義で上げるとき（user_id とどちらか一方）
+    model_format: fbx       # fbx / glb / gltf（更新で中身を差し替えられるのは fbx だけ）
+    previews: true          # プレビュー画像（最大5枚）も上げてモデルに設定する
+    distribute: false       # false = 非公開でアップロードまで / true = Creator Store に price.usd で出品
+    # 環境変数: ROBLOX_API_KEY（権限: assets の Read・Write。distribute するなら creator-store-product の Write も）
+
   # ---- API がないので、入力用キットを作って人が出品する販売先 ----
   fab:
     enabled: true
