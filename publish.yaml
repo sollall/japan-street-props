@@ -1,0 +1,53 @@
+# 販売先ごとの設定。enabled で出品のオン・オフを切り替える。
+# 一時的な切り替えはコマンドでもできる: --only sketchfab,fab / --enable etsy / --disable booth
+# 環境変数 PUBLISH_ONLY=sketchfab,fab でも --only と同じ指定ができる（CI 用）。
+#
+# 秘密情報はここに書かない。各販売先の認証情報は環境変数で渡す（下のコメント参照）。
+# 既定はリハーサル実行（送信しない）。実際に送るときだけ --live を付ける。
+
+state_file: .publish-state.json   # どの販売先に何のIDで出したかの記録（コミットしてよい）
+out_dir: dist/publish             # 梱包したzipと手作業用キットの出力先
+
+targets:
+  # ---- API で下書きまで自動作成する販売先 ----
+  sketchfab:
+    enabled: true
+    publish: false          # false = 下書きでアップロード（公開は画面で）
+    model_format: glb       # アップロードするファイル形式
+    # 環境変数: SKETCHFAB_API_TOKEN
+
+  cgtrader:
+    enabled: false
+    formats: [blend, fbx, glb, usd, stl]
+    category_id: null       # CGTrader のカテゴリID（/v1/categories で確認）
+    # 環境変数: CGTRADER_ACCESS_TOKEN（OAuth で取得したアクセストークン）
+
+  etsy:
+    enabled: false
+    shop_id: ""
+    taxonomy_id: null       # Etsy のカテゴリID
+    currency: usd           # ショップの通貨（usd / jpy）
+    who_made: i_did
+    when_made: made_to_order
+    formats: [stl, "3mf", obj]
+    # 環境変数: ETSY_API_KEY（keystring:shared_secret）, ETSY_ACCESS_TOKEN
+
+  itch:
+    enabled: false
+    project: "yourname/japan-town-assets"   # ページは itch.io 上で先に作っておく
+    channel_prefix: assets
+    formats: [blend, fbx, glb, usd]
+    # 環境変数: BUTLER_API_KEY（butler コマンドが必要）
+
+  # ---- API がないので、入力用キットを作って人が出品する販売先 ----
+  fab:
+    enabled: true
+    formats: [blend, fbx, glb, usd]
+
+  booth:
+    enabled: true
+    formats: [blend, fbx, glb, usd, stl]
+
+  cults:
+    enabled: false
+    formats: [stl, "3mf", obj]

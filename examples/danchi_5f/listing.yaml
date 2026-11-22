@@ -1,0 +1,40 @@
+# 1アセット = 1ファイル。全販売先の出品情報をここにまとめる。
+id: danchi-5f
+version: 1.0.0
+
+title:
+  en: Japanese Danchi Apartment Block (5F) - Modular
+  ja: 日本の団地 5階建て モジュール式
+
+description:
+  en: |
+    A modular 5-story Japanese public housing block (danchi) built to real-world dimensions.
+    Includes stairwell units, balconies and rooftop water tank as separate parts.
+  ja: |
+    実寸で作った日本の5階建て団地（公団住宅風）のモジュール式3Dモデルです。
+    階段室ユニット、ベランダ、屋上の高架水槽を別パーツで収録しています。
+
+tags: [japan, danchi, apartment, building, modular, suburban, architecture]
+
+license: royalty-free      # royalty-free / editorial / cc-by など
+ai_usage: assisted         # none（不使用）/ assisted（一部にAI使用）/ generated（AI生成）
+
+price:
+  usd: 19.99
+  jpy: 2800
+
+files:
+  - { path: files/danchi_5f.blend, format: blend }
+  - { path: files/danchi_5f.fbx,   format: fbx }
+  - { path: files/danchi_5f.glb,   format: glb }
+
+images:
+  - images/front.png
+  - images/side.png
+  - images/top.png
+  - images/perspective.png
+
+# 販売先ごとに上書きしたい項目（任意）
+overrides:
+  booth:
+    title: 【3Dモデル】日本の団地 5階建て（モジュール式・実寸）
