@@ -76,7 +76,7 @@ def cfg_and_listing(work):
 
 def test_config_enabled_flags(work):
     config, _ = cfg_and_listing(work)
-    assert resolve_enabled(config, KNOWN) == ["sketchfab", "cgtrader", "roblox", "fab", "booth"]
+    assert resolve_enabled(config, KNOWN) == ["cgtrader", "roblox"]
 
 
 def test_only_overrides_config(work):
@@ -86,8 +86,8 @@ def test_only_overrides_config(work):
 
 def test_enable_and_disable(work):
     config, _ = cfg_and_listing(work)
-    got = resolve_enabled(config, KNOWN, enable=["cgtrader"], disable=["booth", "sketchfab"])
-    assert got == ["cgtrader", "roblox", "fab"]
+    got = resolve_enabled(config, KNOWN, enable=["fab"], disable=["roblox"])
+    assert got == ["cgtrader", "fab"]
 
 
 def test_env_only(work, monkeypatch):

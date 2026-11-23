@@ -11,7 +11,7 @@ out_dir: dist/publish             # 梱包したzipと手作業用キットの�
 targets:
   # ---- API で下書きまで自動作成する販売先 ----
   sketchfab:
-    enabled: true
+    enabled: false
     publish: false          # false = 下書きでアップロード（公開は画面で）
     model_format: glb       # アップロードするファイル形式
     # 環境変数: SKETCHFAB_API_TOKEN
@@ -19,7 +19,7 @@ targets:
   cgtrader:
     enabled: true
     formats: [blend, fbx, glb, usd, stl]
-    category_id: null       # CGTrader のカテゴリID（/v1/categories で確認）
+    category_id: null       # 必須。CGTrader のカテゴリID（/v1/categories で確認）。未設定だとデプロイが失敗する
     # 環境変数: CGTRADER_ACCESS_TOKEN（OAuth で取得したアクセストークン）
 
   etsy:
@@ -41,7 +41,7 @@ targets:
 
   roblox:
     enabled: true
-    user_id: null           # 自分の名義で上げるとき（プロフィールURLの数字）
+    user_id: null           # 必須（group_id とどちらか）。自分の名義で上げるとき（プロフィールURLの数字）
     group_id: null          # グループの名義で上げるとき（user_id とどちらか一方）
     model_format: fbx       # fbx / glb / gltf（更新で中身を差し替えられるのは fbx だけ）
     previews: true          # プレビュー画像（最大5枚）も上げてモデルに設定する
@@ -50,11 +50,11 @@ targets:
 
   # ---- API がないので、入力用キットを作って人が出品する販売先 ----
   fab:
-    enabled: true
+    enabled: false
     formats: [blend, fbx, glb, usd]
 
   booth:
-    enabled: true
+    enabled: false
     formats: [blend, fbx, glb, usd, stl]
 
   cults:

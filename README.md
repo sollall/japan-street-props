@@ -57,6 +57,8 @@ asset-publisher publish assets/*/listing.yaml
 2. **`production` の Secrets に、使う販売先の認証情報を登録する。**（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`、`ROBLOX_API_KEY`）
 3. 販売先を絞りたいときは、リポジトリ変数 `PUBLISH_ONLY`（例: `fab,booth`）を設定する。
 
+いまオンになっているのは **CGTrader と Roblox** だけです（`publish.yaml`）。デプロイを通すには、上の Secrets に `CGTRADER_ACCESS_TOKEN` と `ROBLOX_API_KEY` を入れ、`publish.yaml` の `cgtrader.category_id` と `roblox.user_id`（グループ名義なら `group_id`）を埋めてください。
+
 知っておくこと:
 
 - オンになっている販売先の認証情報がないと、その販売先はエラーになり、実行全体が失敗（赤）になります。その場合も何も送信されず、他の販売先の処理は続きます。
