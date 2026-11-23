@@ -1,0 +1,94 @@
+# main にマージされたら、各販売先へ出品する（API のある販売先は下書きまで）。
+#
+# production Environment に「Required reviewers」を設定しておくと、承認ボタンを押すまで送信されない。
+# 設定していない場合は、マージした時点でそのまま送信されるので注意。
+#
+# 認証情報は production Environment の Secrets に、使う販売先の分だけ登録する。
+# 販売先の絞り込みは、リポジトリ変数 PUBLISH_ONLY（例: sketchfab,fab）か、手動実行時の入力で行う。
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/**"
+      - "publish.yaml"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "この販売先だけに出す（カンマ区切り。空なら publish.yaml の enabled に従う）"
+        required: false
+        default: ""
+      force:
+        description: "出品済みでも新規作成し直す"
+        type: boolean
+        default: false
+
+# 出品履歴の書き込みが競合しないよう、同時に1つだけ動かす
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # 出品履歴（.publish-state.json）をコミットするため
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+
+      - name: 出品する
+        env:
+          PUBLISH_ONLY: ${{ inputs.only || vars.PUBLISH_ONLY }}
+          FORCE: ${{ inputs.force && '--force' || '' }}
+          SKETCHFAB_API_TOKEN: ${{ secrets.SKETCHFAB_API_TOKEN }}
+          CGTRADER_ACCESS_TOKEN: ${{ secrets.CGTRADER_ACCESS_TOKEN }}
+          ETSY_API_KEY: ${{ secrets.ETSY_API_KEY }}
+          ETSY_ACCESS_TOKEN: ${{ secrets.ETSY_ACCESS_TOKEN }}
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+        run: |
+          set -o pipefail
+          asset-publisher publish assets/*/listing.yaml --live $FORCE | tee publish.log
+
+      - name: 結果をまとめに出す
+        if: always()
+        run: |
+          {
+            echo '## 出品結果'
+            echo '```'
+            cat publish.log 2>/dev/null || echo '（出品の手前で止まりました）'
+            echo '```'
+            echo 'Fab・BOOTH などの手作業用キットは、この実行の Artifacts「publish-kits」にあります。'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 手作業用キットを保存
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-kits
+          path: dist/publish/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      # 一部の販売先が失敗しても、成功した分の記録は残す（次回の二重出品を防ぐ）
+      - name: 出品履歴をコミット
+        if: always()
+        run: |
+          if [ -z "$(git status --porcelain .publish-state.json)" ]; then
+            echo "出品履歴に変更はありません"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .publish-state.json
+          git commit -m "出品履歴を更新 [skip ci]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

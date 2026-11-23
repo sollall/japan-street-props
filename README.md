@@ -44,6 +44,26 @@ asset-publisher publish assets/*/listing.yaml
 リハーサルなので何も送信されず、`dist/publish/` に Fab・BOOTH 用のキットができます。
 実際に送る前に、下の「出品前に決めること」を確認してください。
 
+### マージで出品する（GitHub Actions）
+
+| ワークフロー | いつ動くか | やること |
+|---|---|---|
+| `ci.yml` | PR と main への push | テストと、出品のリハーサル（送信なし） |
+| `deploy.yml` | main に `assets/` か `publish.yaml` の変更が入ったとき、または手動実行 | `--live` で出品し、キットを Artifacts に保存、出品履歴をコミット |
+
+使い始める前に、GitHub の Settings で次を設定します。
+
+1. **Environments → `production` を作り、Required reviewers に自分を入れる。** これで、承認ボタンを押すまで送信されません。**設定しないと、マージした時点でそのまま送信されます。**
+2. **`production` の Secrets に、使う販売先の認証情報を登録する。**（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`、`ROBLOX_API_KEY`）
+3. 販売先を絞りたいときは、リポジトリ変数 `PUBLISH_ONLY`（例: `fab,booth`）を設定する。
+
+知っておくこと:
+
+- オンになっている販売先の認証情報がないと、その販売先はエラーになり、実行全体が失敗（赤）になります。その場合も何も送信されず、他の販売先の処理は続きます。
+- Fab・BOOTH のキットは、実行結果の Artifacts「publish-kits」からダウンロードできます（30日保存）。
+- 出品履歴（`.publish-state.json`）は実行後に main へ自動でコミットされます。main に直接 push を禁止する保護ルールがあると、このコミットだけ失敗します。
+- 同じバージョンは二重に出品されません。出し直すときは `listing.yaml` の `version` を上げるか、手動実行で force を選びます。
+
 ### 出品前に決めること
 
 - **AI 使用の申告**：モデルは AI が書いたスクリプトで生成しているため、`ai_usage: generated` にしています。販売先によっては AI 生成物の扱いに制限や申告義務があるので、各販売先の規約を確認してください。手でモデルを直した場合は実態に合わせて書き換えてください。
