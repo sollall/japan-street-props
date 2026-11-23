@@ -1,0 +1,62 @@
+{
+  "jp-curve-mirror": {
+    "booth": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    },
+    "fab": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    }
+  },
+  "jp-guardrail": {
+    "booth": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    },
+    "fab": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    }
+  },
+  "jp-signboard": {
+    "booth": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    },
+    "fab": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    }
+  },
+  "jp-utility-pole": {
+    "booth": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    },
+    "fab": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    }
+  },
+  "jp-vending-machine": {
+    "booth": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    },
+    "fab": {
+      "status": "kit_ready",
+      "updated_at": "2026-11-23T20:17:09+00:00",
+      "version": "1.0.0"
+    }
+  }
+}
