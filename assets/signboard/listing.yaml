@@ -1,0 +1,44 @@
+# 1アセット = 1ファイル。全販売先の出品情報をここにまとめる。
+# モデルと画像は `python -m props.build signboard` で作り直せる。
+id: jp-signboard
+version: 1.0.0
+
+title:
+  en: Japanese Shop Signs (Pole Sign + Stand Sign, Blank) - Low Poly Street Props
+  ja: 日本の看板 2種（袖看板・スタンド看板／無地）ローポリ小物
+
+description:
+  en: |
+    Two blank illuminated shop signs: a vertical pole-mounted sign (3.5 m) and a wheeled stand sign (1.15 m).
+    Each display face is a single quad with 0-1 UVs on the 'SignFace' material, so you can drop in your own artwork.
+    About 410 triangles in total, two meshes. No text or logos included.
+  ja: |
+    無地の電飾看板2種です。ポール付きの縦型袖看板（高さ3.5 m）と、キャスター付きスタンド看板（高さ1.15 m）。
+    表示面は「SignFace」マテリアルの四角形1枚（UV 0〜1）なので、好きな画像を貼るだけで使えます。
+    合計約410三角形・2メッシュ。文字やロゴは入っていません。
+
+tags: [japan, signboard, shop sign, kanban, street, prop, low poly, urban]
+
+license: royalty-free
+ai_usage: generated        # モデルは AI が書いた Blender スクリプトで生成している
+
+price:
+  usd: 4.99
+  jpy: 700
+
+files:
+  - { path: files/signboard.blend, format: blend }
+  - { path: files/signboard.fbx,   format: fbx }
+  - { path: files/signboard.glb,   format: glb }
+
+images:
+  - images/perspective.png
+  - images/front.png
+  - images/side.png
+  - images/top.png
+
+overrides:
+  booth:
+    title: 【3Dモデル】看板2種 ポール付き袖看板＋スタンド看板（無地・ローポリ・実寸）
+  roblox:
+    title: Japanese Shop Signs - Blank (2 Types)        # Roblox の名前は50文字まで

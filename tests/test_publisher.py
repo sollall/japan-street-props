@@ -15,7 +15,7 @@ from asset_publisher.listing import load_listing
 from asset_publisher.runner import publish
 
 ROOT = Path(__file__).resolve().parents[1]
-KNOWN = ["sketchfab", "cgtrader", "etsy", "itch", "fab", "booth", "cults"]
+KNOWN = ["sketchfab", "cgtrader", "etsy", "itch", "roblox", "fab", "booth", "cults"]
 
 
 @pytest.fixture
@@ -46,7 +46,16 @@ def fake_http(monkeypatch):
 
     def fake_request(self, method, url, **kw):
         sent.append({"method": method, "url": url, "data": kw.get("data"),
-                     "json": kw.get("json"), "files": list((kw.get("files") or {}).keys())})
+                     "json": kw.get("json"), "files": list((kw.get("files") or {}).keys()),
+                     "files_raw": kw.get("files")})
+        if url.endswith("/assets/v1/assets") and method == "POST":
+            n = sum(1 for x in sent if x["url"].endswith("/assets/v1/assets"))
+            return Resp(200, {"path": f"operations/op{n}", "done": False})
+        if "/assets/v1/operations/op" in url:
+            return Resp(200, {"path": "operations/x", "done": True,
+                              "response": {"assetId": str(9000 + int(url.rsplit("op", 1)[1]))}})
+        if "creator-store-products" in url:
+            return Resp(200, {"path": "creator-store-products/p1"})
         if "sketchfab" in url and method == "POST":
             return Resp(201, {"uid": "sf123"})
         if url.endswith("/v1/models") and method == "POST":
@@ -67,7 +76,7 @@ def cfg_and_listing(work):
 
 def test_config_enabled_flags(work):
     config, _ = cfg_and_listing(work)
-    assert resolve_enabled(config, KNOWN) == ["sketchfab", "fab", "booth"]
+    assert resolve_enabled(config, KNOWN) == ["sketchfab", "cgtrader", "roblox", "fab", "booth"]
 
 
 def test_only_overrides_config(work):
@@ -78,7 +87,7 @@ def test_only_overrides_config(work):
 def test_enable_and_disable(work):
     config, _ = cfg_and_listing(work)
     got = resolve_enabled(config, KNOWN, enable=["cgtrader"], disable=["booth", "sketchfab"])
-    assert got == ["cgtrader", "fab"]
+    assert got == ["cgtrader", "roblox", "fab"]
 
 
 def test_env_only(work, monkeypatch):
@@ -204,6 +213,98 @@ def test_kit_uses_japanese_for_booth(work):
     publish(config, [listing], ["booth"], live=False)
     fields = (config.out_dir / "danchi-5f/booth/fields.md").read_text(encoding="utf-8")
     assert "【3Dモデル】日本の団地" in fields and "¥2,800" in fields
+
+
+# ---------- Roblox Creator Store ----------
+
+@pytest.fixture
+def roblox(work, fake_http, monkeypatch):
+    monkeypatch.setenv("ROBLOX_API_KEY", "x")
+    monkeypatch.setattr("asset_publisher.adapters.roblox.time.sleep", lambda s: None)
+    config, listing = cfg_and_listing(work)
+    config.targets["roblox"]["user_id"] = 1234567
+    return config, listing, fake_http
+
+
+def test_roblox_uploads_private_model_with_previews(roblox):
+    config, listing, sent = roblox
+    out = publish(config, [listing], ["roblox"], live=True)[0]
+    assert out.action == "create" and out.status == "draft"
+    assert out.url == "https://create.roblox.com/dashboard/creations/store/9001/configure"
+
+    uploads = [s for s in sent if s["url"].endswith("/assets/v1/assets")]
+    requests_sent = [json.loads(u["data"]["request"]) for u in uploads]
+    assert [r["assetType"] for r in requests_sent] == ["Model"] + ["Image"] * 4
+    assert requests_sent[0]["creationContext"] == {"creator": {"userId": 1234567}}
+    assert all(u["files"] == ["fileContent"] for u in uploads)
+
+    patch = [s for s in sent if s["method"] == "PATCH"][0]
+    assert patch["url"].endswith("/assets/9001?updateMask=previews")
+    previews = json.loads(patch["files_raw"]["request"][1])["previews"]
+    assert [p["asset"] for p in previews] == [f"assets/{i}" for i in range(9002, 9006)]
+
+    assert not any("creator-store-products" in s["url"] for s in sent)   # 出品はしていない
+    state = json.loads(config.state_file.read_text())
+    assert state["danchi-5f"]["roblox"]["remote_id"] == "9001"
+
+
+def test_roblox_distribute_sets_usd_price(roblox):
+    config, listing, sent = roblox
+    config.targets["roblox"].update(distribute=True, previews=False)
+    out = publish(config, [listing], ["roblox"], live=True)[0]
+    assert out.status == "published" and out.url == "https://create.roblox.com/store/asset/9001"
+    body = sent[-1]["json"]
+    assert sent[-1]["url"].endswith("/cloud/v2/creator-store-products")
+    assert body["modelAssetId"] == "9001" and body["published"] is True
+    assert body["basePrice"]["quantity"] == {"significand": 19_990_000_000, "exponent": -9}
+
+
+def test_roblox_distribute_failure_keeps_upload(roblox, monkeypatch):
+    config, listing, sent = roblox
+    config.targets["roblox"].update(distribute=True, previews=False)
+    real = requests.Session.request
+
+    def failing(self, method, url, **kw):
+        if "creator-store-products" in url:
+            class Bad:
+                status_code, content, text, headers = 403, b"", "not a seller", {}
+            return Bad()
+        return real(self, method, url, **kw)
+
+    monkeypatch.setattr(requests.Session, "request", failing)
+    out = publish(config, [listing], ["roblox"], live=True)[0]
+    assert out.ok and out.status == "draft" and "403" in out.note
+    state = json.loads(config.state_file.read_text())
+    assert state["danchi-5f"]["roblox"]["remote_id"] == "9001"   # 二重アップロードを防ぐため記録は残す
+
+
+def test_roblox_update_replaces_fbx(roblox):
+    config, listing, sent = roblox
+    config.targets["roblox"]["previews"] = False
+    publish(config, [listing], ["roblox"], live=True)
+    listing.version = "1.1.0"
+    out = publish(config, [listing], ["roblox"], live=True)[0]
+    assert out.action == "update"
+    patch = [s for s in sent if s["method"] == "PATCH"][-1]
+    assert patch["url"].endswith("/assets/9001?updateMask=description%2CdisplayName")
+    assert "fileContent" in patch["files"]
+    assert len([s for s in sent if s["url"].endswith("/assets/v1/assets")]) == 1   # 新規作成はしていない
+
+
+def test_roblox_checks(work, monkeypatch):
+    monkeypatch.setenv("ROBLOX_API_KEY", "x")
+    config, listing = cfg_and_listing(work)
+    config.targets["roblox"]["distribute"] = True
+    listing.price["usd"] = 99.0
+    note = publish(config, [listing], ["roblox"], live=True)[0].note
+    assert "user_id" in note and "$2.99" in note
+
+
+def test_roblox_dry_run(work, fake_http):
+    config, listing = cfg_and_listing(work)
+    out = publish(config, [listing], ["roblox"], live=False)[0]
+    assert out.ok and fake_http == []
+    assert out.calls[0].url == "https://apis.roblox.com/assets/v1/assets"
 
 
 # ---------- CLI ----------

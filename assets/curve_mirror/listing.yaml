@@ -1,0 +1,44 @@
+# 1アセット = 1ファイル。全販売先の出品情報をここにまとめる。
+# モデルと画像は `python -m props.build curve_mirror` で作り直せる。
+id: jp-curve-mirror
+version: 1.0.0
+
+title:
+  en: Japanese Curve Mirror (Road Safety Mirror) - Low Poly Street Prop
+  ja: カーブミラー（道路反射鏡）ローポリ小物
+
+description:
+  en: |
+    The orange convex traffic mirror found at Japanese intersections: 800 mm round mirror on a 3.2 m pole,
+    tilted 8 degrees down, with a blank caution plate.
+    About 540 triangles, one mesh. The mirror uses a fully metallic material; set up reflections in your engine.
+  ja: |
+    日本の交差点でよく見るオレンジ色の道路反射鏡です。直径800 mmの丸形一面鏡、支柱の高さ3.2 m、
+    8度下向き、無地の注意板付き。
+    約540三角形・1メッシュ。鏡面は金属マテリアルなので、映り込みは使うエンジン側で設定してください。
+
+tags: [japan, curve mirror, traffic mirror, road, street, prop, low poly]
+
+license: royalty-free
+ai_usage: generated        # モデルは AI が書いた Blender スクリプトで生成している
+
+price:
+  usd: 3.99
+  jpy: 500
+
+files:
+  - { path: files/curve_mirror.blend, format: blend }
+  - { path: files/curve_mirror.fbx,   format: fbx }
+  - { path: files/curve_mirror.glb,   format: glb }
+
+images:
+  - images/perspective.png
+  - images/front.png
+  - images/side.png
+  - images/top.png
+
+overrides:
+  booth:
+    title: 【3Dモデル】カーブミラー 丸形800mm（ローポリ・実寸）
+  roblox:
+    title: Japanese Curve Mirror (Road Mirror)        # Roblox の名前は50文字まで

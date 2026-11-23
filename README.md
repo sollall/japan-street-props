@@ -1,3 +1,77 @@
+# japan-street-props
+
+日本の路上小物の3Dモデル集と、それを複数の販売先へ出品するツール（asset-publisher）です。
+小物は1点ずつが軽く数を出しやすいので、出品の流れを試す題材にしています。
+
+## 収録している小物
+
+| 名前 | 内容 | 大きさ（幅×奥行×高さ） | 三角形 | 価格 |
+|---|---|---|---|---|
+| `vending_machine` | 飲料の自動販売機（窓とボタンは発光） | 1.0 × 0.8 × 1.83 m | 約1,800 | $5.99 / ¥800 |
+| `utility_pole` | 電柱（腕金・がいし・柱上変圧器・街路灯付き、電線なし） | 1.8 × 2.2 × 10.0 m | 約1,600 | $5.99 / ¥800 |
+| `curve_mirror` | カーブミラー（丸形800 mm、一面鏡） | 0.85 × 0.32 × 3.2 m | 約540 | $3.99 / ¥500 |
+| `guardrail` | 白い波形ガードレール4 m区間（X方向に並べるとつながる） | 4.0 × 0.25 × 0.83 m | 約460 | $3.99 / ¥500 |
+| `signboard` | 無地の電飾看板2種（ポール付き袖看板・スタンド看板） | 高さ 3.5 m / 1.15 m | 約410 | $4.99 / ¥700 |
+
+各小物は `assets/<名前>/` に、出品情報（`listing.yaml`）、モデル（`files/` の blend・fbx・glb）、
+プレビュー画像（`images/` の4枚）が入っています。共通の約束は、実寸・メートル単位、正面は -Y、原点は地面です。
+企業ロゴや商標は入れていません。
+
+### モデルを作り直す
+
+モデルは `props/` の Blender スクリプトから生成しています。寸法や色を変えたいときは `props/models.py` を直して作り直します。
+
+```bash
+pip install -e ".[build]"
+```
+
+```bash
+python -m props.build                 # 全部（プレビュー画像込みで7分ほど）
+```
+
+```bash
+python -m props.build guardrail --no-render   # 1点だけ、画像なし
+```
+
+小物を足すときは、`props/models.py` に関数を足して `MODELS` に登録し、`assets/<名前>/listing.yaml` を書きます。
+
+### 出品を試す
+
+```bash
+asset-publisher publish assets/*/listing.yaml
+```
+
+リハーサルなので何も送信されず、`dist/publish/` に Fab・BOOTH 用のキットができます。
+実際に送る前に、下の「出品前に決めること」を確認してください。
+
+### マージで出品する（GitHub Actions）
+
+| ワークフロー | いつ動くか | やること |
+|---|---|---|
+| `ci.yml` | PR と main への push | テストと、出品のリハーサル（送信なし） |
+| `deploy.yml` | main に `assets/` か `publish.yaml` の変更が入ったとき、または手動実行 | `--live` で出品し、キットを Artifacts に保存、出品履歴をコミット |
+
+使い始める前に、GitHub の Settings で次を設定します。
+
+1. **Environments → `production` を作り、Required reviewers に自分を入れる。** これで、承認ボタンを押すまで送信されません。**設定しないと、マージした時点でそのまま送信されます。**
+2. **`production` の Secrets に、使う販売先の認証情報を登録する。**（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`、`ROBLOX_API_KEY`）
+3. 販売先を絞りたいときは、リポジトリ変数 `PUBLISH_ONLY`（例: `fab,booth`）を設定する。
+
+知っておくこと:
+
+- オンになっている販売先の認証情報がないと、その販売先はエラーになり、実行全体が失敗（赤）になります。その場合も何も送信されず、他の販売先の処理は続きます。
+- Fab・BOOTH のキットは、実行結果の Artifacts「publish-kits」からダウンロードできます（30日保存）。
+- 出品履歴（`.publish-state.json`）は実行後に main へ自動でコミットされます。main に直接 push を禁止する保護ルールがあると、このコミットだけ失敗します。
+- 同じバージョンは二重に出品されません。出し直すときは `listing.yaml` の `version` を上げるか、手動実行で force を選びます。
+
+### 出品前に決めること
+
+- **AI 使用の申告**：モデルは AI が書いたスクリプトで生成しているため、`ai_usage: generated` にしています。販売先によっては AI 生成物の扱いに制限や申告義務があるので、各販売先の規約を確認してください。手でモデルを直した場合は実態に合わせて書き換えてください。
+- **価格**：上の表は仮の値です。`listing.yaml` の `price` で変えられます。
+- **見た目**：単色マテリアルのローポリです。テクスチャは付けていません。
+
+---
+
 # asset-publisher
 
 Blender で作った3Dアセットを、複数の販売先へまとめて出品するツールです。
@@ -11,6 +85,7 @@ Blender で作った3Dアセットを、複数の販売先へまとめて出品�
 | CGTrader | API | 下書き作成、画像・ファイル添付 | 内容確認、AI使用の申告、公開 |
 | Etsy | API | ダウンロード商品の下書き作成、画像・ファイル添付 | 内容確認して公開 |
 | itch.io | butler | ファイルのアップロード・更新 | ページは最初に手で作る |
+| Roblox Creator Store | API | モデルを非公開でアップロード、プレビュー画像を設定（設定すれば出品まで） | 出品をオンにして価格を設定 |
 | Fab | キット | zip・画像・入力文面・チェックリストを作成 | 画面で入力して審査に出す |
 | BOOTH | キット | 同上（日本語・円建て） | 画面で入力して公開 |
 | Cults3D | キット | 同上 | 画面で入力して公開 |
@@ -57,7 +132,7 @@ asset-publisher record assets/danchi_5f/listing.yaml fab --url https://www.fab.c
 
 - `publish.yaml`：販売先ごとのオン・オフと設定
 - `assets/<名前>/listing.yaml`：1アセット分の出品情報（タイトル・説明は日英、価格はドルと円）。サンプルは `examples/danchi_5f/`
-- 認証情報は環境変数で渡します（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`）。`--live` のときだけ必要です。
+- 認証情報は環境変数で渡します（`SKETCHFAB_API_TOKEN`、`CGTRADER_ACCESS_TOKEN`、`ETSY_API_KEY`、`ETSY_ACCESS_TOKEN`、`BUTLER_API_KEY`、`ROBLOX_API_KEY`）。`--live` のときだけ必要です。
 
 ## 販売先を足すとき
 
@@ -91,4 +166,10 @@ project-deploy:
 - **CGTrader**：下書き作成時のフィールド名（`title`・`description`・`tags`・`prices`・`category_id`）は、公開されている更新APIの例から推測しています。最初の `--live` の前に API ドキュメントと照らし合わせてください。AI 使用の申告を API で行う方法は確認できなかったので、画面での申告をメモに出しています。
 - **Etsy**：`when_made` の値やタグの渡し方は、実際の API の応答を見て調整が必要な場合があります。
 - **Sketchfab**：既存モデルの更新はタイトルや説明などの情報だけで、モデルファイルは差し替えられません。ファイルを変えたときは `--force` で新規作成してください。
+- **Roblox Creator Store**
+  - API キーは Creator Hub で作り、権限に assets の Read・Write を付けます。`distribute: true` にするなら creator-store-product の Write も必要です。`publish.yaml` に `user_id` か `group_id` を書いてください。
+  - 送れるのは1ファイル 20MB まで。アップロードすると Roblox の Model（パッケージ）に変換されるので、見た目は Studio で確認してください。
+  - 既定（`distribute: false`）は非公開でアップロードするだけです。`true` にすると `price.usd`（$2.99〜$49.99、0 は無料）で**そのまま公開されます**。有料で売るには、事前に画面で販売者アカウント（Stripe）の登録が必要です。
+  - 出品 API とアセットの更新 API はベータです。プレビュー画像の設定や出品が失敗しても、モデルのアップロードは成功として記録し、失敗の内容をメモに出します。
+  - 更新でモデルの中身を差し替えられるのは fbx だけです。価格や出品状態の変更は画面で行ってください。
 - テストはすべて通信をモックしたものです。実際の販売先にはまだ接続していません。最初は各販売先を1つずつ `--only` で試してください。
