@@ -40,3 +40,5 @@ images:
 overrides:
   booth:
     title: 【3Dモデル】ガードレール 4m区間・並べてつながる（ローポリ・実寸）
+  roblox:
+    title: Japanese Guardrail 4m (Tileable)        # Roblox の名前は50文字まで

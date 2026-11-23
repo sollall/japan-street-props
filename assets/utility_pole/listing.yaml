@@ -40,3 +40,5 @@ images:
 overrides:
   booth:
     title: 【3Dモデル】日本の電柱 柱上変圧器・街路灯付き（ローポリ・実寸）
+  roblox:
+    title: Japanese Utility Pole with Transformer        # Roblox の名前は50文字まで

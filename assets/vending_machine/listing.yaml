@@ -40,3 +40,5 @@ images:
 overrides:
   booth:
     title: 【3Dモデル】日本の自動販売機（ローポリ・実寸）
+  roblox:
+    title: Japanese Vending Machine (Low Poly)        # Roblox の名前は50文字まで

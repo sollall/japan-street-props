@@ -28,6 +28,7 @@ def test_listing_is_valid(path):
         assert f.path.stat().st_size > 1000, f"{f.path} が空に近い"
     glb = next(f.path for f in listing.files if f.format == "glb")
     assert glb.read_bytes()[:4] == b"glTF"
+    assert len(listing.text("title", "en", "roblox")) <= 50   # Roblox の名前の上限
     for img in listing.images:
         assert img.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
 
@@ -37,8 +38,8 @@ def test_rehearsal_publish_makes_kits(tmp_path):
     config.out_dir = tmp_path / "out"
     config.state_file = tmp_path / "state.json"
     listings = [load_listing(p) for p in LISTINGS]
-    outcomes = publish(config, listings, ["sketchfab", "fab", "booth"], live=False)
-    assert len(outcomes) == len(LISTINGS) * 3
+    outcomes = publish(config, listings, ["sketchfab", "cgtrader", "roblox", "fab", "booth"], live=False)
+    assert len(outcomes) == len(LISTINGS) * 5
     assert all(o.ok for o in outcomes), [o.note for o in outcomes if not o.ok]
     for listing in listings:
         for target in ("fab", "booth"):

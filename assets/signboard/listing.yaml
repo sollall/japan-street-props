@@ -40,3 +40,5 @@ images:
 overrides:
   booth:
     title: 【3Dモデル】看板2種 ポール付き袖看板＋スタンド看板（無地・ローポリ・実寸）
+  roblox:
+    title: Japanese Shop Signs - Blank (2 Types)        # Roblox の名前は50文字まで

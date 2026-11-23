@@ -17,7 +17,7 @@ targets:
     # 環境変数: SKETCHFAB_API_TOKEN
 
   cgtrader:
-    enabled: false
+    enabled: true
     formats: [blend, fbx, glb, usd, stl]
     category_id: null       # CGTrader のカテゴリID（/v1/categories で確認）
     # 環境変数: CGTRADER_ACCESS_TOKEN（OAuth で取得したアクセストークン）
@@ -40,7 +40,7 @@ targets:
     # 環境変数: BUTLER_API_KEY（butler コマンドが必要）
 
   roblox:
-    enabled: false
+    enabled: true
     user_id: null           # 自分の名義で上げるとき（プロフィールURLの数字）
     group_id: null          # グループの名義で上げるとき（user_id とどちらか一方）
     model_format: fbx       # fbx / glb / gltf（更新で中身を差し替えられるのは fbx だけ）

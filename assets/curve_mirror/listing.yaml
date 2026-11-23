@@ -40,3 +40,5 @@ images:
 overrides:
   booth:
     title: 【3Dモデル】カーブミラー 丸形800mm（ローポリ・実寸）
+  roblox:
+    title: Japanese Curve Mirror (Road Mirror)        # Roblox の名前は50文字まで
